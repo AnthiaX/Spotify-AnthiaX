@@ -50,9 +50,20 @@ app.get('/auth/login', (req, res) => {
   const state = crypto.randomBytes(16).toString('hex');
   res.cookie('spotify_state', state, { httpOnly: true, sameSite: 'lax', secure: true });
 
+  // 🔑 All useful scopes
   const scope = [
-    'user-top-read',
-    'user-read-email'
+    'user-top-read',             // get top tracks & artists
+    'user-read-recently-played', // get recently played
+    'user-read-playback-state',  // playback info
+    'user-modify-playback-state',// control playback
+    'user-read-currently-playing',// current song
+    'playlist-read-private',     // read private playlists
+    'playlist-modify-private',   // modify private playlists
+    'playlist-modify-public',    // modify public playlists
+    'user-library-read',         // read saved tracks/albums
+    'user-library-modify',       // save/remove tracks/albums
+    'user-read-email',           // user email
+    'user-read-private'          // profile info
   ].join(' ');
 
   const url = new URL(SPOTIFY_AUTH);
@@ -109,7 +120,7 @@ app.get('/api/:userId/top', async (req, res) => {
     const { type = 'tracks', time_range = 'long_term', limit = 10 } = req.query;
 
     // type: "tracks" or "artists"
-    // time_range: "short_term" (4 weeks), "medium_term" (6 months), "long_term" (several years)
+    // time_range: "short_term" (~4 weeks), "medium_term" (~6 months), "long_term" (years)
 
     const { data } = await axios.get(`${SPOTIFY_API}/me/top/${type}`, {
       headers: { Authorization: `Bearer ${token}` },
