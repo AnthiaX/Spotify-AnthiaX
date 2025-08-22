@@ -119,14 +119,27 @@ app.get('/api/:userId/top', async (req, res) => {
     const token = await refreshIfNeeded(req.params.userId);
     const { type = 'tracks', time_range = 'long_term', limit = 10 } = req.query;
 
-    // type: "tracks" or "artists"
-    // time_range: "short_term" (~4 weeks), "medium_term" (~6 months), "long_term" (years)
-
     const { data } = await axios.get(`${SPOTIFY_API}/me/top/${type}`, {
       headers: { Authorization: `Bearer ${token}` },
       params: { time_range, limit }
     });
 
+    res.json(data);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+// 4) Get user profile
+app.get('/api/:userId/me', async (req, res) => {
+  try {
+    const token = await refreshIfNeeded(req.params.userId);
+
+    const { data } = await axios.get(`${SPOTIFY_API}/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    res.setHeader('Content-Type', 'application/json');
     res.json(data);
   } catch (e) {
     res.status(400).json({ error: e.message });
