@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 
 const app = express();
 app.use(express.json());
+app.set('trust proxy', 1);
 app.use(cookieParser());
 
 // In-memory store for tokens (replace with DB if needed)
